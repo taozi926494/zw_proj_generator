@@ -50,17 +50,12 @@ class SlaveSpider(RedisSpider):
         # 以下为基本信息, 勿修改
         meta = response.meta
         paper_item = PaperItem()
-        paper_item['_id'] = self.snow.get_id()  # 获取雪花算法的id
-        paper_item['url'] = response.url  # 网页url
-        paper_item['source'] = self.source
-        paper_item['source_html'] = response.xpath('/html').extract_first()  # 网页源码
-        paper_item['insert_date'] = datetime.datetime.now().strftime('%Y-%m-%d')  # 数据插入日期（yyyy-mm-dd）
-        paper_item['update_date'] = datetime.datetime.now().strftime('%Y-%m-%d')  # 数据更新日期（yyyy-mm-dd）
-        # ----- 基本信息完毕 ----------------------
+        # 赋值item的必填基础字段 _id, url, source, sec_title, insert_date, update_date
+        self.required_field(response, paper_item)
 
-        paper_item['sec_title'] = meta['sec_title']
         # 如果不是附件
         if not meta['is_attach']:
+            paper_item['source_html'] = response.xpath('/html').extract_first()  # 网页源码
             # 信息盒区域
             info_box = response.xpath('//ol[@class="doc-info"]')
             paper_item['topic_cat_info_alias'] = '主题分类'
@@ -106,11 +101,28 @@ class SlaveSpider(RedisSpider):
 
         else:
             # 如果是附件
-            paper_item['title'] = meta['title']
-            if meta.get('reference_number_info'):
-                paper_item['reference_number_info'] = meta['reference_number_info']
+            self.attach_field(response, paper_item)
 
         yield paper_item
+
+    def required_field(self, response, item):
+        """
+        必填字段
+        :param response: 网页response
+        :param item: 存储item
+        :return:
+        """
+        item['_id'] = self.snow.get_id()  # 获取雪花算法的id
+        item['url'] = response.url  # 网页url
+        item['source'] = self.source
+        item['sec_title'] = response.meta['sec_title']
+        item['insert_date'] = datetime.datetime.now().strftime('%Y-%m-%d')  # 数据插入日期（yyyy-mm-dd）
+        item['update_date'] = datetime.datetime.now().strftime('%Y-%m-%d')  # 数据更新日期（yyyy-mm-dd）
+
+    def attach_field(self, response, item):
+        item['title'] = response.meta['title']
+        item['reference_number_info'] = response.meta.get('reference_number_info')
+        item['attachment'] = response.url
 
     def extract_boxitem(self, info_box, title):
         """
