@@ -77,8 +77,7 @@ class SlaveSpider(RedisSpider):
             paper_item['reference_number_info_alias'] = '发文字号'
             paper_item['reference_number_info'] = self.extract_boxitem(info_box, '发文字号')
             if not paper_item['reference_number_info']:
-                if meta.get('reference_number_info'):
-                    paper_item['reference_number_info'] = meta['reference_number_info']
+                paper_item['reference_number_info'] = meta.get('reference_number_info')
 
             paper_item['effective_date_info_alias'] = '实施日期'
             paper_item['effective_date_info'] = self.extract_boxitem(info_box, '实施日期')
@@ -102,6 +101,7 @@ class SlaveSpider(RedisSpider):
         else:
             # 如果是附件
             self.attach_field(response, paper_item)
+            paper_item['reference_number_info'] = meta.get('reference_number_info')
 
         yield paper_item
 
@@ -121,7 +121,6 @@ class SlaveSpider(RedisSpider):
 
     def attach_field(self, response, item):
         item['title'] = response.meta['title']
-        item['reference_number_info'] = response.meta.get('reference_number_info')
         item['attachment'] = response.url
 
     def extract_boxitem(self, info_box, title):
