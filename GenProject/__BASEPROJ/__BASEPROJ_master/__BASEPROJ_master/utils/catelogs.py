@@ -16,7 +16,7 @@ catelogs = [
     #     "url": "http://www.beijing.gov.cn/zhengce/zfwj/25/26/421256/index.html",
     #     "extract_rule": "xpath",
     #     "extract_code": "",
-    #     "sec_title": "政务信息>政策>政策文件>政府文件",
+    #     "sec_title": "政府文件",
     #     "sign": "new"
     # }
     # 市政府办公厅文件
