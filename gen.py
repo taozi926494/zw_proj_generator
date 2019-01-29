@@ -8,9 +8,9 @@ if __name__ == '__main__':
 
     # 城市名，规范：带省、市、自治区
     # 例如：北京市 | 贵州省 | 西藏自治区
-    city = '北京市'
+    city = '贵州省'
 
     # 部门名称
-    section = '人民政府'
+    section = '公共资源交易中心'
 
-    gen(r"D:\Code\Python\crawlers\zhiwen-知文智用\beijing-北京市公文公告\xht谢红韬", city, section, repl_postfix=True)
+    gen(r"D:\Code\Python\crawlers\zhiwen-知文智用\guizhou-贵州省公文公告\xht谢红韬\new", city, section, repl_postfix=True)

@@ -120,6 +120,12 @@ class SlaveSpider(RedisSpider):
         item['update_date'] = datetime.datetime.now().strftime('%Y-%m-%d')  # 数据更新日期（yyyy-mm-dd）
 
     def attach_field(self, response, item):
+        """
+        附件必填字段
+        :param response: 网页response
+        :param item: 存储item
+        :return:
+        """
         item['title'] = response.meta['title']
         item['attachment'] = response.url
 

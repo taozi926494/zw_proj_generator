@@ -15,7 +15,7 @@ def gen(result_dir, city_cn, section_cn, repl_postfix=True):
     """
     source = city_cn + section_cn
     if repl_postfix:
-        city_cn = re.sub('县|市|自治区', '', city_cn)
+        city_cn = re.sub('县|市|省|自治区', '', city_cn)
     city_qp = gen_quanpin(city_cn)  # 城市全拼
     section_qp = gen_quanpin(section_cn)  # 部门全拼
     project_qp = '%s_%s' % (city_qp, section_qp)
