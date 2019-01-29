@@ -5,12 +5,11 @@
 '''
 
 catelogs = [
-    # 市政府文件
     {
         "url": "http://www.beijing.gov.cn/zhengce/zfwj/5111/5121/1344471/index.html",
         "extract_rule": "xpath",
         "extract_code": "//ul[@class='list']/li",
-        "sec_title": "政务信息>政策>政策文件>政府文件",
+        "sec_title": "政府文件",
         "sign": "new"
     },
     # {
