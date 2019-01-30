@@ -152,7 +152,7 @@ class SlaveSpider(RedisSpider):
         :param title: 信息盒里面的title
         :return: 提取内容
         """
-        item = info_box.xpath('li[contains(text(), "%s")]' % title)
+        item = info_box.xpath('li[contains(string(), "%s")]' % title)
         if not item:
             return None
 
