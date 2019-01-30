@@ -94,7 +94,7 @@ class SlaveSpider(RedisSpider):
             # 正文源码
             paper_item['text_html'] = response.xpath('//div[@id="textBox"]').extract_first()
             # 附件
-            attachments = response.xpath('//div[@id="textBox"]/a/@href').extract()
+            attachments = response.xpath('//div[@id="textBox"]//a/@href').extract()
             if attachments:
                 paper_item['attachment'] = data_operator.extract_attachments(attachments, response)
 
