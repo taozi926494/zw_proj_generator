@@ -6,6 +6,11 @@ import logging
 import os
 import re
 
+import scrapy
+from scrapy.http import Response
+from scrapy.utils.response import get_base_url
+from urllib.parse import urljoin
+
 def unify_date(date_str):
     '''
     功能:处理时间为统一格式
@@ -52,11 +57,24 @@ def is_attachment(href):
     else:
         return False
 
-def extract_attachments(hrefs, url_front=''):
+def unify_url(response, url):
+    """
+    标准化url路径 （绝对路径和相对路径都会转换成绝对路径）
+    :param response: scrapy.Response
+    :param url: url
+    :return:
+    """
+    if not isinstance(response, Response):
+        logging.error("[** ERROR **] function unify_path(response, url) "
+                      "papram response is not instance of scrapy.Response")
+    return urljoin(get_base_url(response), url)
+
+
+def extract_attachments(hrefs, response):
     """
     提取附件
     :param hrefs: 提取出来的超链接列表
-    :param url_front: 如果是相对路劲, 需要拼接的url前半部分
+    :param response: scrapy.Response
     :return: 返回获取的附件url列表
     """
 
@@ -68,16 +86,5 @@ def extract_attachments(hrefs, url_front=''):
     for href in hrefs:
         # 判断获取的超链接的后缀是否为附件格式
         if is_attachment(href):
-            # 绝对路径
-            if 'http' in href or 'https' in href:
-                attach_list.append(str(href))
-            # 相对路径 ./xxx.doc 或 /xxx.doc
-            else:
-                if not url_front:
-                    logging.error('No url front when extract attachment\'s relative url')
-                    return ['[ERROR] No url front when extract attachment\'s relative url']
-                if url_front[-1] != '/':
-                    url_front += '/'
-                href = href[href.index('/') + 1:]
-                attach_list.append(url_front + href)
+            unify_url(response, href)
     return attach_list

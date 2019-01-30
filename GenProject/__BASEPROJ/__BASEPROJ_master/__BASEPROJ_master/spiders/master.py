@@ -6,6 +6,7 @@ from ..utils import name_generator
 from ..utils.catelogs import catelogs
 from ..items import PaperListItem
 from ..utils.parse_err import log, NO_REQUIRED, NO_LIST
+from ..utils import data_operator
 
 
 class MasterSpider(scrapy.Spider):
@@ -17,7 +18,6 @@ class MasterSpider(scrapy.Spider):
     这里定义一个首页标识
     '''
     first_page = True
-    main_page = 'http://www.beijing.gov.cn'
 
     def start_requests(self):
         """
@@ -44,7 +44,7 @@ class MasterSpider(scrapy.Spider):
             paper_item = {}
             paper_item['url'] = paper.xpath('a/@href').extract_first()
             if paper_item['url']:
-                paper_item['url'] = self.main_page + paper_item['url']
+                paper_item['url'] = data_operator.unify_url(paper_item['url'], response)
             else:
                 log(NO_REQUIRED, 'paper_url', '公文url地址', response)
                 return
@@ -57,7 +57,10 @@ class MasterSpider(scrapy.Spider):
         yield paperlistItem
 
         # 提取翻页信息
-        next_page = response.xpath('//div[@class="fy"]/a[contains(text(), "下一页")]/@href').extract_first()
+        # [** NOTICE **] 注意修改xpath页码部分的提取规则
+        # [** NOTICE **] 同时注意浏览最后一页的a标签href规则，某些网站最后一页是javascript(void(0))或者就是最后一页的地址
+        #     不在下方做判断会造成重复翻页
+        next_page = response.xpath('//div[@class="fy"]//a[contains(text(), "下一页")]/@href').extract_first()
         if next_page:
-            next_page = self.main_page + next_page
+            next_page = data_operator.unify_url(next_page, response)
             yield scrapy.Request(url=next_page, meta=meta, callback=self.parse_list)

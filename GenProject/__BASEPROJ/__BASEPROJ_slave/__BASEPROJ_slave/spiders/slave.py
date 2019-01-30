@@ -50,7 +50,7 @@ class SlaveSpider(RedisSpider):
         # 以下为基本信息, 勿修改
         meta = response.meta
         paper_item = PaperItem()
-        # 赋值item的必填基础字段 _id, url, source, sec_title, insert_date, update_date
+        # [** NOTICE **] 勿修改，赋值item的必填基础字段 _id, url, source, sec_title, insert_date, update_date
         self.required_field(response, paper_item)
 
         # 如果不是附件
@@ -96,7 +96,7 @@ class SlaveSpider(RedisSpider):
             # 附件
             attachments = response.xpath('//div[@id="textBox"]/a/@href').extract()
             if attachments:
-                paper_item['attachment'] = data_operator.extract_attachments(attachments)
+                paper_item['attachment'] = data_operator.extract_attachments(attachments, response)
 
         else:
             # 如果是附件
@@ -132,6 +132,7 @@ class SlaveSpider(RedisSpider):
     def extract_boxitem(self, info_box, title):
         """
         提取信息盒里面的某一项内容
+        [** NOTICE **] 根据自己的网页结构作修改
         北京市信息盒内容格式为：
         <ol>
             <li>

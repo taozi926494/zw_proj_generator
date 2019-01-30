@@ -19,6 +19,5 @@ catelogs = [
     #     "sec_title": "政府文件",
     #     "sign": "new"
     # }
-    # 市政府办公厅文件
 
 ]
