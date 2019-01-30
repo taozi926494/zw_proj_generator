@@ -16,6 +16,8 @@ def unify_date(date_str):
     :param data: str 时间字符串
     :return:
     '''
+    if not date_str:
+        return None
     # 先去掉24小时的时间，例如 11:24:11、11:24
     date_str = re.sub('\s+\d+:\d+:?\d*', '', date_str)
     return date_str.replace(u'年', u'-').replace(u'月', u'-').replace(u'日', u'')

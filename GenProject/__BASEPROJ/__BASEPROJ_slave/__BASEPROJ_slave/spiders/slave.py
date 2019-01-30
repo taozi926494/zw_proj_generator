@@ -58,32 +58,34 @@ class SlaveSpider(RedisSpider):
             paper_item['source_html'] = response.xpath('/html').extract_first()  # 网页源码
             # 信息盒区域
             info_box = response.xpath('//ol[@class="doc-info"]')
-            paper_item['topic_cat_info_alias'] = '主题分类'
-            paper_item['topic_cat_info'] = self.extract_boxitem(info_box, '主题分类')
+            if info_box:
+                paper_item['topic_cat_info_alias'] = '主题分类'
+                paper_item['topic_cat_info'] = self.extract_boxitem(info_box, '主题分类')
 
-            paper_item['pub_office_info_alias'] = '发文机构'
-            paper_item['pub_office_info'] = self.extract_boxitem(info_box, '发文机构')
+                paper_item['pub_office_info_alias'] = '发文机构'
+                paper_item['pub_office_info'] = self.extract_boxitem(info_box, '发文机构')
 
-            paper_item['draft_date_info_alias'] = '成文日期'
-            paper_item['draft_date_info'] = self.extract_boxitem(info_box, '成文日期')
-            # 如果没有提取到成文日期, 就从正文中去找
-            if not paper_item['draft_date_info']:
-                textlines = response.xpath('//div[@id="textBox"]/p/text()').extract()
-                paper_item['draft_date_info'] = data_operator.draftdate_from_textlines(textlines)
+                paper_item['draft_date_info_alias'] = '成文日期'
+                paper_item['draft_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '成文日期'))
+                # 如果没有提取到成文日期, 就从正文中去找
+                if not paper_item['draft_date_info']:
+                    textlines = response.xpath('//div[@id="textBox"]/p/text()').extract()
+                    paper_item['draft_date_info'] = data_operator.unify_date(
+                        data_operator.draftdate_from_textlines(textlines))
 
-            paper_item['pub_date_info_alias'] = '发布日期'
-            paper_item['pub_date_info'] = self.extract_boxitem(info_box, '发布日期')
+                paper_item['pub_date_info_alias'] = '发布日期'
+                paper_item['pub_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '发布日期'))
 
-            paper_item['reference_number_info_alias'] = '发文字号'
-            paper_item['reference_number_info'] = self.extract_boxitem(info_box, '发文字号')
-            if not paper_item['reference_number_info']:
-                paper_item['reference_number_info'] = meta.get('reference_number_info')
+                paper_item['reference_number_info_alias'] = '发文字号'
+                paper_item['reference_number_info'] = self.extract_boxitem(info_box, '发文字号')
+                if not paper_item['reference_number_info']:
+                    paper_item['reference_number_info'] = meta.get('reference_number_info')
 
-            paper_item['effective_date_info_alias'] = '实施日期'
-            paper_item['effective_date_info'] = self.extract_boxitem(info_box, '实施日期')
+                paper_item['effective_date_info_alias'] = '实施日期'
+                paper_item['effective_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '实施日期'))
 
-            paper_item['expire_date_info_alias'] = '废止日期'
-            paper_item['expire_date_info'] = self.extract_boxitem(info_box, '废止日期')
+                paper_item['expire_date_info_alias'] = '废止日期'
+                paper_item['expire_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '废止日期'))
 
             # 标题
             paper_item['title'] = response.xpath('//div[@class="doc-header"]/h1/text()').extract_first()
