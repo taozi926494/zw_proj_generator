@@ -57,7 +57,7 @@ class SlaveSpider(RedisSpider):
         if not meta['is_attach']:
             paper_item['source_html'] = response.xpath('/html').extract_first()  # 网页源码
             # 信息盒区域
-            info_box = response.xpath('//ol[@class="doc-info"]')
+            info_box = response.xpath('*//ol[@class="doc-info"]')
             if info_box:
                 paper_item['topic_cat_info_alias'] = '主题分类'
                 paper_item['topic_cat_info'] = self.extract_boxitem(info_box, '主题分类')
@@ -69,7 +69,7 @@ class SlaveSpider(RedisSpider):
                 paper_item['draft_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '成文日期'))
                 # 如果没有提取到成文日期, 就从正文中去找
                 if not paper_item['draft_date_info']:
-                    textlines = response.xpath('//div[@id="textBox"]/p/text()').extract()
+                    textlines = response.xpath('*//div[@id="textBox"]/p/text()').extract()
                     paper_item['draft_date_info'] = data_operator.unify_date(
                         data_operator.draftdate_from_textlines(textlines))
 
@@ -88,15 +88,15 @@ class SlaveSpider(RedisSpider):
                 paper_item['expire_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '废止日期'))
 
             # 标题
-            paper_item['title'] = response.xpath('//div[@class="doc-header"]/h1/text()').extract_first()
+            paper_item['title'] = response.xpath('*//div[@class="doc-header"]/h1/text()').extract_first()
             if not paper_item['title']:
                 paper_item['title'] = meta['title']
             # 正文
-            paper_item['text'] = response.xpath('//div[@id="textBox"]').xpath('string(.)').extract_first()
+            paper_item['text'] = response.xpath('*//div[@id="textBox"]').xpath('string(.)').extract_first()
             # 正文源码
-            paper_item['text_html'] = response.xpath('//div[@id="textBox"]').extract_first()
+            paper_item['text_html'] = response.xpath('*//div[@id="textBox"]').extract_first()
             # 附件
-            attachments = response.xpath('//div[@id="textBox"]//a/@href').extract()
+            attachments = response.xpath('*//div[@id="textBox"]*//a/@href').extract()
             if attachments:
                 paper_item['attachment'] = data_operator.extract_attachments(attachments, response)
 
@@ -152,7 +152,7 @@ class SlaveSpider(RedisSpider):
         :param title: 信息盒里面的title
         :return: 提取内容
         """
-        item = info_box.xpath('li[contains(string(), "%s")]' % title)
+        item = info_box.xpath('*//li[contains(string(), "%s")]' % title)
         if not item:
             return None
 
