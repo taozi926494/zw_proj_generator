@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urllib.parse import urlparse
 
 import scrapy
 
@@ -45,9 +46,14 @@ class MasterSpider(scrapy.Spider):
         paperlistItem['paper_list'] = []
         for paper in paper_list:
             paper_item = {}
-            paper_item['url'] = paper.xpath('a/@href').extract_first()
-            if paper_item['url']:
-                paper_item['url'] = data_operator.unify_url(paper_item['url'], response)
+            paper_url = paper.xpath('a/@href').extract_first()
+            if paper_url:
+                paper_url = data_operator.unify_url(paper_url, response)
+                # 提取到的url与主页的url应该在同一个域名下, 而不是跳转到其他的网址
+                if urlparse(paper_url).netloc == urlparse(response.url).netloc:
+                    paper_item['url'] = paper_url
+                else:
+                    continue
             else:
                 log(NO_REQUIRED, 'paper_url', '公文url地址', response)
                 return
