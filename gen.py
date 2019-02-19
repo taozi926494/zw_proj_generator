@@ -11,6 +11,6 @@ if __name__ == '__main__':
     city = '贵州省'
 
     # 部门名称
-    section = '政务服务办事指南'
+    section = '公务员局'
 
-    gen(r"D:\Code\Python\crawlers\temp-临时任务\chm-蔡惠民\gz_zffwbszn贵州政务服务办事指南", city, section, repl_postfix=True)
+    gen(r"D:\Code\Python\crawlers\zhiwen-知文智用\guizhou-贵州省公文公告\xht谢红韬\new", city, section, repl_postfix=True)

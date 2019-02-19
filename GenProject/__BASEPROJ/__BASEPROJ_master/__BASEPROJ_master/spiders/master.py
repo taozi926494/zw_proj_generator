@@ -12,12 +12,7 @@ from ..utils import data_operator
 class MasterSpider(scrapy.Spider):
     # 从setting.py中获取工程名，并在工程名后面加上 自定义标识后缀 作为爬虫名
     name = name_generator.spidername_master()
-    '''
-    由于翻页规则为：index, index_1, index_2 ...,
-    先提取第一页的列表数据, 再增加页码提取之后的列表数据
-    这里定义一个首页标识
-    '''
-    first_page = True
+
 
     def start_requests(self):
         """
@@ -25,7 +20,15 @@ class MasterSpider(scrapy.Spider):
         :return: yield Request
         """
         for catelog in catelogs:
+            '''
+            某些翻页规则为：index, index_1, index_2 ...,
+            先提取第一页的列表数据, 再增加页码提取之后的列表数据
+            这里定义一个首页标识
+            '''
+            # catelog['first_page'] = True
+
             yield scrapy.Request(url=catelog.pop('url'), meta=catelog, callback=self.parse_list)
+
 
     def parse_list(self, response):
         """

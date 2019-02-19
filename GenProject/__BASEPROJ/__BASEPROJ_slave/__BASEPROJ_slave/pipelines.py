@@ -4,6 +4,8 @@
 #
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
+import logging
+
 from pymongo import MongoClient
 from .Db.DbInfo import DB_CONFIG_INCRE_COUNT, SpiderIncreCount
 from .Db.SqlHandler import create_session_byengine, create_engine_byconf
@@ -86,12 +88,16 @@ class PaperItemPipeline(object):
         table_name = self.mongo_tablename  # 用于存储爬取数据 的数据表
 
         # 向统计本次爬虫的运行获取了多少条数据的数据库 插入统计的数据
-        incre_count_session.add(SpiderIncreCount(project_name=project_name, spider_name=spider_name
-                                                 , crawl_time=crawl_time, db_type=db_type,
-                                                 db_ip=db_ip
-                                                 , db_name=db_name, table_name=table_name,
-                                                 data_count=self.data_count, machine_ip=self.ip))
-        incre_count_session.commit()
+        try:
+            incre_count_session.add(SpiderIncreCount(project_name=project_name, spider_name=spider_name
+                                                     , crawl_time=crawl_time, db_type=db_type,
+                                                     db_ip=db_ip
+                                                     , db_name=db_name, table_name=table_name,
+                                                     data_count=self.data_count, machine_ip=self.ip))
+            incre_count_session.commit()
+        except Exception as err:
+            logging.error('ERROR when insert Increment Data Table')
+            print(repr(err))
         incre_count_session.close()
 
     def process_item(self, item, spider):
