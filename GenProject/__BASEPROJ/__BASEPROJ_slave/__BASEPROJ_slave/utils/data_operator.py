@@ -18,9 +18,11 @@ def unify_date(date_str):
     '''
     if not date_str:
         return None
-    # 先去掉24小时的时间，例如 11:24:11、11:24
-    date_str = re.sub('\s+\d+:\d+:?\d*', '', date_str)
-    return date_str.replace(u'年', u'-').replace(u'月', u'-').replace(u'日', u'')
+
+    date = re.search(r'(\d+(\-|年|/)\d+(\-|月|/)\d+)', date_str)
+    if date:
+        date = date.group()
+        return re.sub('年|月|/', '-', date)
 
 def unify_url(url, response):
     """
