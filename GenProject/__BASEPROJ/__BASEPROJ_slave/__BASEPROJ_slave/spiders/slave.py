@@ -165,3 +165,11 @@ class SlaveSpider(RedisSpider):
             if '---' in result:
                 return None
             return result
+
+        ## 有些信息盒是信息名称接下来的一个td就是要获取的内容
+        ## 这里提供一个实现（不满足条件的不需要return 默认return None）
+        # item = info_box.xpath('*//td[contains(string(), "%s")]' % title)
+        # if item:
+        #     next_td = item.xpath('following-sibling::td[1]/text()').extract_first()
+        #     if next_td:
+        #         return next_td.strip()
