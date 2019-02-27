@@ -4,9 +4,15 @@
 #
 # See documentation in:
 # https://doc.scrapy.org/en/latest/topics/spider-middleware.html
+import json
+import logging
 import random
+import time
+
 from scrapy import signals
 from .utils.user_agents import agents
+from scrapy.utils.project import get_project_settings
+import requests
 
 
 class UserAgentMiddleware(object):
@@ -15,6 +21,54 @@ class UserAgentMiddleware(object):
     def process_request(self, request, spider):
         agent = random.choice(agents)
         request.headers["User-Agent"] = agent
+
+class ProxyMiddleware(object):
+    """换代理IP"""
+    settings = get_project_settings()
+    proxy_list = []
+    proxy_expire_time = 0
+
+    def process_request(self, request, spider):
+        # 如果是第一次请求
+        if not self.proxy_list:
+            params = {
+                'timestamp': int(time.time()),
+                'project': get_project_settings().get('PROJECT_NAME'),
+                'must_list': 1
+            }
+            response = json.loads(requests.get(url=self.settings.get('PROXY_CENTER_URL'), params=params).text)
+            if response['code'] == 200:
+                self.proxy_list = response['data']
+                self.proxy_expire_time = response['proxy_expire_time']
+                logging.info('[Proxy First Get] Success get proxy ip ! Total %s , Expire time %s'
+                             % (len(self.proxy_list),
+                                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.proxy_expire_time))))
+            else:
+                self.proxy_list = response['data']
+                self.proxy_expire_time = response['proxy_expire_time']
+                logging.info('[Proxy First Get] %s ! Total %s , Expire time %s'
+                             % (response['msg'], len(self.proxy_list),
+                                time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.proxy_expire_time))))
+
+        # 如果不是第一次请求
+        else:
+            # 如果代理IP的过期时间大于当前的时间
+            if self.proxy_expire_time > int(time.time()):
+                params = {
+                    'timestamp': int(time.time()),
+                    'project': get_project_settings().get('PROJECT_NAME'),
+                }
+                response = json.loads(requests.get(url=self.settings.get('PROXY_CENTER_URL'), params=params).text)
+                if response['code'] == 200:
+                    self.proxy_list = response['data']
+                    self.proxy_expire_time = response['proxy_expire_time']
+                    logging.info('[Proxy Running Get] Success get proxy ip ! Total %s , Expire time %s'
+                                 % (len(self.proxy_list)
+                                    , time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.proxy_expire_time))))
+
+        proxy = random.choice(self.proxy_list)
+        request.meta['proxy'] = 'http://%s:%s' % (proxy['ip'], proxy['port'])
+
 
 class GuizhouGongwuyuanjuSlaveSpiderMiddleware(object):
     # Not all methods need to be defined. If a method is not defined,

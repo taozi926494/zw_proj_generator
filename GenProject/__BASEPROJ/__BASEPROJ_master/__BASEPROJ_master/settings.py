@@ -54,6 +54,7 @@ ROBOTSTXT_OBEY = False
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    '__BASEPROJ_master.middlewares.UserAgentMiddleware': 401,
+   '__BASEPROJ_master.middlewares.ProxyMiddleware': 543,
 }
 
 # Enable or disable extensions
@@ -105,3 +106,5 @@ MONGO_DBNAME = 'zw'  # MONGODB数据库名
 
 PROJECT_NAME = '__BASEPROJ'
 SECTION_SOURCE = '__SOURCE'
+
+PROXY_CENTER_URL = 'http://localhost:5000/get_proxy_ip'
