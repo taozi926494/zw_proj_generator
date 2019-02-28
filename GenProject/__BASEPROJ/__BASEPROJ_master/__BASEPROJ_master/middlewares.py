@@ -52,8 +52,8 @@ class ProxyMiddleware(object):
 
         # 如果不是第一次请求
         else:
-            # 如果代理IP的过期时间大于当前的时间
-            if self.proxy_expire_time > int(time.time()):
+            # 如果代理IP的过期时间小于当前的时间, 证明IP已过期，请求刷新IP
+            if self.proxy_expire_time < int(time.time()):
                 params = {
                     'timestamp': int(time.time()),
                     'project': get_project_settings().get('PROJECT_NAME'),
