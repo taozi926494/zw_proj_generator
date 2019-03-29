@@ -14,7 +14,7 @@ def unify_date(date_str):
     '''
     功能:处理时间为统一格式
     :param data: str 时间字符串
-    :return:
+    :return: xxxx-xx-xx
     '''
     if not date_str:
         return None
@@ -22,7 +22,13 @@ def unify_date(date_str):
     date = re.search(r'(\d+(\-|年|/|\.)\d+(\-|月|/|\.)\d+)', date_str)
     if date:
         date = date.group()
-        return re.sub('年|月|/|\.', '-', date)
+        date = re.sub('年|月|/|\.', '-', date)
+        date_list = date.split('-')
+        for i, el in enumerate(date_list):
+            el_int = int(el)
+            if el_int < 10:
+                date_list[i] = '0%s' % el_int
+        return '-'.join(date_list)
 
 def unify_url(url, response):
     """

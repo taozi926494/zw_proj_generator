@@ -79,7 +79,7 @@ class SlaveSpider(RedisSpider):
                 paper_item['pub_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '发布日期'))
                 if not paper_item['pub_date_info']:
                     paper_item['pub_date_info'] = meta.get('pub_date_info')
-                
+
                 paper_item['reference_number_info_alias'] = '发文字号'
                 paper_item['reference_number_info'] = self.extract_boxitem(info_box, '发文字号')
                 if not paper_item['reference_number_info']:
