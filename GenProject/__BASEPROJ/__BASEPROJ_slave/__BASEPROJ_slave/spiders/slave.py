@@ -74,7 +74,7 @@ class SlaveSpider(RedisSpider):
                         data_operator.draftdate_from_textlines(textlines))
 
                 # [** NOTICE **] 一般列表页都有文号或者发布日期，会在主爬虫里push到redis中
-                # 这里增加一个从列表页获取文号或者发布日期（这段代码可以不用修改，获取不到就为None）
+                # 这里增加一个从列表页获取文号或者发布日期（这段代码可以不用修改，获取不到就为None） 
                 paper_item['pub_date_info_alias'] = '发布日期'
                 paper_item['pub_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '发布日期'))
                 if not paper_item['pub_date_info']:
