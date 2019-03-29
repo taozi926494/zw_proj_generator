@@ -89,16 +89,17 @@ class SlaveSpider(RedisSpider):
 
             # 标题
             paper_item['title'] = response.xpath('*//div[@class="doc-header"]/h1/text()').extract_first()
-            if not paper_item['title']:
-                paper_item['title'] = meta['title']
+            paper_item['title'] = paper_item['title'].strip() if paper_item['title'] else meta['title']
             # 正文
             paper_item['text'] = response.xpath('*//div[@id="textBox"]').xpath('string(.)').extract_first()
             # 正文源码
             paper_item['text_html'] = response.xpath('*//div[@id="textBox"]').extract_first()
             # 附件
-            attachments = response.xpath('*//div[@id="textBox"]*//a/@href').extract()
+            # [** NOTICE **] 注意附件的提取规则
+            attachments = response.xpath('*//div[@id="textBox"]//a/@href').extract()
             if attachments:
-                paper_item['attachment'] = data_operator.extract_attachments(attachments, response)
+                paper_item['attachment'] = data_operator.extract_attachments(
+                    attachments, response, attach_has_postfix=True)
 
         else:
             # 如果是附件

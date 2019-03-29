@@ -54,7 +54,7 @@ ROBOTSTXT_OBEY = False
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
    '__BASEPROJ_slave.middlewares.UserAgentMiddleware': 401,
-   '__BASEPROJ_master.middlewares.ProxyMiddleware': 543,
+   # '__BASEPROJ_slave.middlewares.ProxyMiddleware': 543,
 }
 
 # Enable or disable extensions
@@ -101,14 +101,14 @@ EXTENSIONS = {
 MYEXT_ENABLED = True
 IDLE_NUMBER = 60
 
-# REDIS_HOST = '172.10.10.183'
-REDIS_HOST = 'localhost'
+REDIS_HOST = '172.10.10.183'
+# REDIS_HOST = 'localhost'
 REDIS_PORT = 6379
 
-# MONGO_HOST = '172.10.10.180'
-# MONGO_PORT = 20000
-MONGO_HOST = 'localhost'
-MONGO_PORT = 27017
+MONGO_HOST = '172.10.10.180'
+MONGO_PORT = 20000
+# MONGO_HOST = 'localhost'
+# MONGO_PORT = 27017
 MONGO_DBNAME = 'zw'  # MONGODB数据库名
 
 PROJECT_NAME = '__BASEPROJ'

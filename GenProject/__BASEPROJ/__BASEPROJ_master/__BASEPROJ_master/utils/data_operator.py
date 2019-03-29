@@ -19,10 +19,10 @@ def unify_date(date_str):
     if not date_str:
         return None
 
-    date = re.search(r'(\d+(\-|年|/)\d+(\-|月|/)\d+)', date_str)
+    date = re.search(r'(\d+(\-|年|/|\.)\d+(\-|月|/|\.)\d+)', date_str)
     if date:
         date = date.group()
-        return re.sub('年|月|/', '-', date)
+        return re.sub('年|月|/|\.', '-', date)
 
 def unify_url(url, response):
     """
@@ -72,16 +72,21 @@ def is_attachment(href):
     else:
         return False
 
-def extract_attachments(hrefs, response):
+def extract_attachments(hrefs, response, attach_has_postfix=True):
     """
     提取附件
     :param hrefs: 提取出来的超链接列表
     :param response: scrapy.Response
+    :param attach_has_postfix: 附件是否有后缀(有些附件的链接没有后缀)
     :return: 返回获取的附件url列表
     """
     attach_list = []
-    for href in hrefs:
-        # 判断获取的超链接的后缀是否为附件格式
-        if is_attachment(href):
+    if attach_has_postfix:
+        for href in hrefs:
+            # 判断获取的超链接的后缀是否为附件格式
+            if is_attachment(href):
+                attach_list.append(unify_url(href, response))
+    else:
+        for href in hrefs:
             attach_list.append(unify_url(href, response))
     return attach_list
