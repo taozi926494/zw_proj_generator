@@ -73,9 +73,13 @@ class SlaveSpider(RedisSpider):
                     paper_item['draft_date_info'] = data_operator.unify_date(
                         data_operator.draftdate_from_textlines(textlines))
 
+                # [** NOTICE **] 一般列表页都有文号或者发布日期，会在主爬虫里push到redis中
+                # 这里增加一个从列表页获取文号或者发布日期（这段代码可以不用修改，获取不到就为None）
                 paper_item['pub_date_info_alias'] = '发布日期'
                 paper_item['pub_date_info'] = data_operator.unify_date(self.extract_boxitem(info_box, '发布日期'))
-
+                if not paper_item['pub_date_info']:
+                    paper_item['pub_date_info'] = meta.get('pub_date_info')
+                
                 paper_item['reference_number_info_alias'] = '发文字号'
                 paper_item['reference_number_info'] = self.extract_boxitem(info_box, '发文字号')
                 if not paper_item['reference_number_info']:
@@ -104,7 +108,10 @@ class SlaveSpider(RedisSpider):
         else:
             # 如果是附件
             self.attach_field(response, paper_item)
+            # [** NOTICE **] 一般列表页都有文号或者发布日期，会在主爬虫里push到redis中
+            # 这里增加一个从列表页获取文号或者发布日期（这段代码可以不用修改，获取不到就为None）
             paper_item['reference_number_info'] = meta.get('reference_number_info')
+            paper_item['pub_date_info'] = meta.get('pub_date_info')
 
         yield paper_item
 
